@@ -1,5 +1,8 @@
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 import { verifyEmailTemplate } from "../templates/verifyEmail.template";
+
+dotenv.config();
 
 const { EMAIL_USER, EMAIL_PASS, CLIENT_URL } = process.env;
 if (!EMAIL_USER || !EMAIL_PASS) {
@@ -26,7 +29,7 @@ export const sendVerificationEmail = async ({
   name,
   token,
 }: SendVerificationEmailOptions): Promise<void> => {
-  const link = `${CLIENT_URL}/verify-email?email=${email}&token=${token}`;
+  const link = `${CLIENT_URL}/auth/verify-email?email=${email}&token=${token}`;
 
   const html = verifyEmailTemplate(name, link);
 
@@ -34,7 +37,7 @@ export const sendVerificationEmail = async ({
     await transporter.sendMail({
       from: `"Read Stack" <${EMAIL_USER}>`,
       to: email,
-      subject: "Verify your ArticleFlow email",
+      subject: "Verify your ReadStack email",
       html,
     });
 

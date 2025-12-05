@@ -1,19 +1,15 @@
 import { Response } from "express";
+import dotenv from "dotenv";
 
-// export const setCookie = (res: Response, type: string, token: string) => {
-//   res.cookie(type, token, {
-//     httpOnly: true,
-//     secure: true,
-//     sameSite: "strict",
-//     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-//   });
-// };
+dotenv.config({ debug: true });
 
 export const setCookie = (res: Response, type: string, token: string) => {
+  const isProduction = process.env.NODE_ENV === "production";
+
   res.cookie(type, token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
   });
 };
