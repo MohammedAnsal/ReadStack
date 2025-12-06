@@ -10,6 +10,7 @@ import {
   updateArticleSchema,
 } from "../../utils/validations/article.validation";
 import { IArticleController } from "../interfaces/article.Icontroller";
+import { responseMessage } from "../../enums/responseMessage.enum";
 
 @Service()
 export class ArticleController implements IArticleController {
@@ -19,10 +20,9 @@ export class ArticleController implements IArticleController {
     this.articleService = articleService;
   }
 
-  /** Create Article */
   async createArticle(req: AuthRequest, res: Response) {
     try {
-      const userId = req.user?.id; 
+      const userId = req.user?.id;
       if (!userId) throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
 
       const parsed = createArticleSchema.parse(req.body);
@@ -31,51 +31,89 @@ export class ArticleController implements IArticleController {
       return res.status(HttpStatus.CREATED).json(response);
     } catch (error: unknown) {
       if (error instanceof AppError) {
-        return res
-          .status(error.statusCode)
-          .json({ success: false, message: error.message });
+        console.log(error.message);
+        return res.status(error.statusCode).json({
+          status: false,
+          message: error.message,
+        });
       }
-      if (error instanceof Error) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ success: false, message: error.message });
-      }
+
+      console.error("Unexpected Error (signUp):", error);
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ success: false, message: "Something went wrong" });
+        .json({ status: false, message: responseMessage.ERROR_MESSAGE });
     }
   }
 
-  /** Get Feed Articles */
+  async uploadImage(req: Request, res: Response) {
+    try {
+      if (!req.file) {
+        throw new AppError("No image uploaded", HttpStatus.BAD_REQUEST);
+      }
+
+      const url = await this.articleService.uploadImage(req.file);
+
+      return res.status(HttpStatus.OK).json({
+        success: true,
+        message: "Image uploaded successfully",
+        url,
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          message: error.message,
+        });
+      }
+
+      console.error("Upload Image Error:", error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Something went wrong",
+      });
+    }
+  }
+
   async getFeed(req: Request, res: Response) {
     try {
       const response = await this.articleService.getFeed();
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {
+      if (error instanceof AppError) {
+        console.log(error.message);
+        return res.status(error.statusCode).json({
+          status: false,
+          message: error.message,
+        });
+      }
+
+      console.error("Unexpected Error (signUp):", error);
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ success: false, message: "Something went wrong" });
+        .json({ status: false, message: responseMessage.ERROR_MESSAGE });
     }
   }
 
-  /** Get Single Article */
   async getArticle(req: Request, res: Response) {
     try {
       const response = await this.articleService.getArticle(req.params.id);
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {
       if (error instanceof AppError) {
-        return res
-          .status(error.statusCode)
-          .json({ success: false, message: error.message });
+        console.log(error.message);
+        return res.status(error.statusCode).json({
+          status: false,
+          message: error.message,
+        });
       }
+
+      console.error("Unexpected Error (signUp):", error);
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ success: false, message: "Something went wrong" });
+        .json({ status: false, message: responseMessage.ERROR_MESSAGE });
     }
   }
 
-  /** Get Logged-In User Articles */
   async getMyArticles(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.id;
@@ -84,13 +122,21 @@ export class ArticleController implements IArticleController {
       const response = await this.articleService.getMyArticles(userId);
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {
+      if (error instanceof AppError) {
+        console.log(error.message);
+        return res.status(error.statusCode).json({
+          status: false,
+          message: error.message,
+        });
+      }
+
+      console.error("Unexpected Error (signUp):", error);
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ success: false, message: "Something went wrong" });
+        .json({ status: false, message: responseMessage.ERROR_MESSAGE });
     }
   }
 
-  /** Update Article */
   async updateArticle(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.id;
@@ -106,22 +152,20 @@ export class ArticleController implements IArticleController {
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {
       if (error instanceof AppError) {
-        return res
-          .status(error.statusCode)
-          .json({ success: false, message: error.message });
+        console.log(error.message);
+        return res.status(error.statusCode).json({
+          status: false,
+          message: error.message,
+        });
       }
-      if (error instanceof Error) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ success: false, message: error.message });
-      }
+
+      console.error("Unexpected Error (signUp):", error);
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ success: false, message: "Something went wrong" });
+        .json({ status: false, message: responseMessage.ERROR_MESSAGE });
     }
   }
 
-  /** Delete Article */
   async deleteArticle(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.id;
@@ -134,17 +178,20 @@ export class ArticleController implements IArticleController {
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {
       if (error instanceof AppError) {
-        return res
-          .status(error.statusCode)
-          .json({ success: false, message: error.message });
+        console.log(error.message);
+        return res.status(error.statusCode).json({
+          status: false,
+          message: error.message,
+        });
       }
+
+      console.error("Unexpected Error (signUp):", error);
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ success: false, message: "Something went wrong" });
+        .json({ status: false, message: responseMessage.ERROR_MESSAGE });
     }
   }
 
-  /** Like Article */
   async likeArticle(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.id;
@@ -156,13 +203,21 @@ export class ArticleController implements IArticleController {
       );
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {
+      if (error instanceof AppError) {
+        console.log(error.message);
+        return res.status(error.statusCode).json({
+          status: false,
+          message: error.message,
+        });
+      }
+
+      console.error("Unexpected Error (signUp):", error);
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ success: false, message: "Something went wrong" });
+        .json({ status: false, message: responseMessage.ERROR_MESSAGE });
     }
   }
 
-  /** Dislike Article */
   async dislikeArticle(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.id;
@@ -174,13 +229,21 @@ export class ArticleController implements IArticleController {
       );
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {
+      if (error instanceof AppError) {
+        console.log(error.message);
+        return res.status(error.statusCode).json({
+          status: false,
+          message: error.message,
+        });
+      }
+
+      console.error("Unexpected Error (signUp):", error);
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ success: false, message: "Something went wrong" });
+        .json({ status: false, message: responseMessage.ERROR_MESSAGE });
     }
   }
 
-  /** Block/Unblock Article */
   async toggleBlock(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.id;
@@ -194,13 +257,17 @@ export class ArticleController implements IArticleController {
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {
       if (error instanceof AppError) {
-        return res
-          .status(error.statusCode)
-          .json({ success: false, message: error.message });
+        console.log(error.message);
+        return res.status(error.statusCode).json({
+          status: false,
+          message: error.message,
+        });
       }
+
+      console.error("Unexpected Error (signUp):", error);
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ success: false, message: "Something went wrong" });
+        .json({ status: false, message: responseMessage.ERROR_MESSAGE });
     }
   }
 }

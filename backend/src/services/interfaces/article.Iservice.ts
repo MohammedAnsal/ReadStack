@@ -11,6 +11,11 @@ export interface IArticleService {
     article: IArticle;
   }>;
 
+  uploadImage(
+    file: Express.Multer.File,
+    folder?: string
+  ): Promise<{ url: string; publicId: string }>;
+
   getFeed(): Promise<{
     success: boolean;
     articles: IArticle[];
