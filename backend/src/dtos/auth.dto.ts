@@ -6,7 +6,7 @@ export interface SignUpDTO {
   dob: Date;
   password: string;
   confirmPassword: string;
-  preferences: string[];
+  preferences?: string[] 
 }
 
 export interface SignInDTO {

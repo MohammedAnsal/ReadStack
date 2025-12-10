@@ -97,7 +97,6 @@ export class AuthController implements IAuthController {
           .status(HttpStatus.BAD_REQUEST)
           .json({ success: false, message: "Invalid credentials" });
       }
-
       const result = await this.authService.signIn(parsedData);
 
       setCookie(res, "refresh_token", String(result.refreshToken));

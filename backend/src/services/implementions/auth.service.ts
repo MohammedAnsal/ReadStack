@@ -182,6 +182,7 @@ export class AuthService implements IAuthService {
       return {
         status: true,
         message: "Sign in successfully completed",
+        userName: existingUser.firstName + existingUser.lastName,
         email: existingUser.email,
         accessToken,
         refreshToken,

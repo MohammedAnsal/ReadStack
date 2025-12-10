@@ -5,6 +5,7 @@ export interface SignUpResponse {
 }
 
 export interface SignInResponse extends SignUpResponse {
+  userName?: string;
   accessToken?: string;
   refreshToken?: string;
 }
