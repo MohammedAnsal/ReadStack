@@ -1,5 +1,5 @@
-export interface IBaseRepository<T> {
-  create(data: T): Promise<T | never>;
+export interface IBaseRepository<T, C = T> {
+  create(data: C): Promise<T | never>;
   findById(id: string): Promise<T | null | never>;
   findAll(): Promise<T[] | never>;
   update(id: string, data: Partial<T>): Promise<T | null | never>;

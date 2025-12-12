@@ -1,13 +1,15 @@
 export interface CreateArticleDTO {
   title: string;
-  content: string;
+  content: any; // TipTap JSON
   category: string;
-  image?: string | null;
+  featuredImage: string | null;
+  featuredImageId: string | null;
 }
 
 export interface UpdateArticleDTO {
   title?: string;
-  content?: string;
+  content?: any; // TipTap JSON
   category?: string;
-  image?: string | null;
+  featuredImage?: string | null;
+  featuredImageId?: string | null;
 }

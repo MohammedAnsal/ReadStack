@@ -24,6 +24,7 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginSchemaType) => {
     try {
       const res = await authService.signin(data.email, data.password);
+      localStorage.setItem("access-token", res.accessToken);
 
       useAuthStore.getState().login({
         userName: res.userName,

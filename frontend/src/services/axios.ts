@@ -52,14 +52,14 @@ userAxiosInstance.interceptors.response.use(
         originalRequest._retry = true; // Prevent infinite retry loop
 
         try {
-          // const newAccessToken = await getNewAccessToken();
-          // if (newAccessToken) {
-          //   localStorage.setItem("access-token", newAccessToken);
-          //   originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          //   return userAxiosInstance(originalRequest);
-          // } else {
-          //   throw new Error("Failed to refresh token");
-          // }
+          const newAccessToken = await getNewAccessToken();
+          if (newAccessToken) {
+            localStorage.setItem("access-token", newAccessToken);
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return userAxiosInstance(originalRequest);
+          } else {
+            throw new Error("Failed to refresh token");
+          }
         } catch (err) {
           toast.error("Session expired, please log in again.");
           //   store.dispatch(logout());
@@ -97,15 +97,15 @@ userAxiosInstance.interceptors.response.use(
 );
 
 // **Function to Get a New Access Token**
-// async function getNewAccessToken() {
-//   try {
-//     const response = await axios.get(`${API_URL}/auth/refresh-token`, {
-//       withCredentials: true,
-//     });
+async function getNewAccessToken() {
+  try {
+    const response = await axios.get(`${API_URL}/auth/refresh-token`, {
+      withCredentials: true,
+    });
 
-//     return response.data.token;
-//   } catch (error) {
-//     console.error("Error refreshing access token:", error);
-//     return null;
-//   }
-// }
+    return response.data.token;
+  } catch (error) {
+    console.error("Error refreshing access token:", error);
+    return null;
+  }
+}

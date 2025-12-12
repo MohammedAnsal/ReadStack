@@ -5,6 +5,7 @@ import { CreateArticleDTO, UpdateArticleDTO } from "../../dtos/article.dto";
 import { AppError } from "../../utils/customError.utils";
 import { HttpStatus } from "../../enums/httpStatus.enum";
 import cloudinary from "../../config/config.cloudinary";
+import { Types } from "mongoose";
 
 @Service()
 export class ArticleService {
@@ -30,9 +31,13 @@ export class ArticleService {
   async createArticle(data: CreateArticleDTO, userId: string) {
     try {
       const newArticle = await this.articleRepo.create({
-        ...data,
-        author: userId,
-      } as any);
+        title: data.title,
+        content: data.content,
+        category: data.category,
+        featuredImage: data.featuredImage || null,
+        featuredImageId: data.featuredImageId ?? null,
+        author: new Types.ObjectId(userId),
+      });
 
       return {
         success: true,
@@ -48,31 +53,24 @@ export class ArticleService {
     file: Express.Multer.File,
     folder: string = "readStack/articles"
   ): Promise<{ url: string; publicId: string }> {
-    try {
-      return await new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            folder,
-            resource_type: "image",
-          },
-          (err, result) => {
-            if (err) return reject(err);
+    return await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder,
+          resource_type: "image",
+        },
+        (err, result) => {
+          if (err) return reject(err);
 
-            resolve({
-              url: result?.secure_url || "",
-              publicId: result?.public_id || "",
-            });
-          }
-        );
-
-        uploadStream.end(file.buffer);
-      });
-    } catch (error) {
-      throw new AppError(
-        "Failed to upload image. Please try again.",
-        HttpStatus.INTERNAL_SERVER_ERROR
+          resolve({
+            url: result?.secure_url || "",
+            publicId: result?.public_id || "",
+          });
+        }
       );
-    }
+
+      uploadStream.end(file.buffer);
+    });
   }
 
   async getFeed() {
@@ -86,7 +84,7 @@ export class ArticleService {
 
   async getArticle(articleId: string) {
     try {
-      const article = await this.articleRepo.findById(articleId);
+      const article = await this.articleRepo.findByIdWithAuthor(articleId);
 
       if (!article) {
         throw new AppError("Article not found", HttpStatus.NOT_FOUND);

@@ -1,11 +1,14 @@
 import Container, { Service } from "typedi";
 import { Article, IArticle } from "../../models/article.model";
 import { BaseRepository } from "../base.repository";
-import { IArticleRepository } from "../interfaces/article.Irepository";
+import {
+  CreateArticleInput,
+  IArticleRepository,
+} from "../interfaces/article.Irepository";
 
 @Service()
 export class ArticleRepository
-  extends BaseRepository<IArticle>
+  extends BaseRepository<IArticle, CreateArticleInput>
   implements IArticleRepository
 {
   constructor() {
@@ -14,6 +17,10 @@ export class ArticleRepository
 
   async findAvailableArticles(): Promise<IArticle[]> {
     return this.model.find({ isBlocked: false }).populate("author").exec();
+  }
+
+  async findByIdWithAuthor(id: string): Promise<IArticle | null> {
+    return this.model.findById(id).populate("author").exec();
   }
 
   async findByAuthor(authorId: string): Promise<IArticle[]> {

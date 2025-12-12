@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface AuthState {
+  user: any;
   userName: string | null;
   email: string | null;
   accessToken: string | null;

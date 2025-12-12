@@ -4,8 +4,8 @@ import { Service } from "typedi";
 import { IUser } from "../models/user.model";
 
 @Service()
-export abstract class BaseRepository<T extends Document>
-  implements IBaseRepository<T>
+export abstract class BaseRepository<T extends Document, C = T>
+  implements IBaseRepository<T, C>
 {
   protected model: Model<T>;
 
@@ -41,9 +41,10 @@ export abstract class BaseRepository<T extends Document>
     }
   }
 
-  async create(data: any): Promise<T> {
+  async create(data: C): Promise<T> {
     try {
-      return (await this.model.create(data)) as any;
+      const doc = new this.model(data as any);
+      return (await doc.save()) as T;
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new Error(`Database Error (create): ${error.message}`);

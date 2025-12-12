@@ -25,23 +25,27 @@ export class ArticleController implements IArticleController {
       const userId = req.user?.id;
       if (!userId) throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
 
-      const parsed = createArticleSchema.parse(req.body);
-      const response = await this.articleService.createArticle(parsed, userId);
+      // const parsed = createArticleSchema.parse(req.body);
+
+      const response = await this.articleService.createArticle(
+        req.body,
+        userId
+      );
 
       return res.status(HttpStatus.CREATED).json(response);
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof AppError) {
-        console.log(error.message);
         return res.status(error.statusCode).json({
-          status: false,
+          success: false,
           message: error.message,
         });
       }
 
-      console.error("Unexpected Error (signUp):", error);
-      return res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ status: false, message: responseMessage.ERROR_MESSAGE });
+      console.error("Unexpected Error:", error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Something went wrong",
+      });
     }
   }
 
@@ -50,13 +54,13 @@ export class ArticleController implements IArticleController {
       if (!req.file) {
         throw new AppError("No image uploaded", HttpStatus.BAD_REQUEST);
       }
-
-      const url = await this.articleService.uploadImage(req.file);
+      const { url, publicId } = await this.articleService.uploadImage(req.file);
 
       return res.status(HttpStatus.OK).json({
         success: true,
         message: "Image uploaded successfully",
         url,
+        publicId,
       });
     } catch (error) {
       if (error instanceof AppError) {
@@ -142,11 +146,11 @@ export class ArticleController implements IArticleController {
       const userId = req.user?.id;
       if (!userId) throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
 
-      const parsed = updateArticleSchema.parse(req.body);
+      // const parsed = updateArticleSchema.parse(req.body);
       const response = await this.articleService.updateArticle(
         req.params.id,
         userId,
-        parsed
+        req.body
       );
 
       return res.status(HttpStatus.OK).json(response);

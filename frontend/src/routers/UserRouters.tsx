@@ -6,6 +6,8 @@ import { FeedPage } from "../pages/article/FeedPage";
 import HomePage from "../pages/user/Home";
 import { PublicRoute } from "./authRoutes/PublicRoute";
 import VerifyEmailPage from "../pages/user/auth/VerifyEmail";
+import SingleArticle from "../pages/article/SingleArticle";
+import CreateArticle from "../pages/article/CreateArticle";
 
 export const UserRoutes: RouteObject[] = [
   { path: "/", element: <HomePage /> },
@@ -21,8 +23,14 @@ export const UserRoutes: RouteObject[] = [
 
   {
     element: <ProtectedRoute />,
-    children: [{ path: "/articles/feed", element: <FeedPage /> }],
+    children: [
+      { path: "/articles/feed", element: <FeedPage /> },
+      { path: "/articles/:id  ", element: <SingleArticle /> },
+      { path: "/articles/create" , element : <CreateArticle/> },
+    ],
   },
+
+  { path: "*", element: <HomePage /> },
 ];
 
 export const router = createBrowserRouter(UserRoutes);

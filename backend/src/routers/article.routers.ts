@@ -6,7 +6,7 @@ import { upload } from "../utils/upload.utils";
 const articleRouter = express.Router();
 
 articleRouter.post(
-  "/",
+  "/create",
   authMiddleware,
   articleController.createArticle.bind(articleController)
 );

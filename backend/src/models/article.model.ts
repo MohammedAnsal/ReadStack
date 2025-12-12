@@ -2,9 +2,10 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IArticle extends Document {
   title: string;
-  content: string;
+  content: unknown;
   category: string;
-  image?: string | null
+  featuredImage?: string | null;
+  featuredImageId?: string | null;
   author: mongoose.Types.ObjectId;
   likes: mongoose.Types.ObjectId[];
   dislikes: mongoose.Types.ObjectId[];
@@ -14,9 +15,11 @@ export interface IArticle extends Document {
 const articleSchema = new Schema<IArticle>(
   {
     title: { type: String, required: true },
-    content: { type: String, required: true },
+    content: { type: Schema.Types.Mixed, required: true },
     category: { type: String, required: true },
-    image: { type: String, default: null },
+
+    featuredImage: { type: String, default: null },
+    featuredImageId: { type: String, default: null },
 
     author: {
       type: Schema.Types.ObjectId,
