@@ -73,9 +73,9 @@ export class ArticleService {
     });
   }
 
-  async getFeed() {
+  async getFeed(userId?: string) {
     try {
-      const articles = await this.articleRepo.findAvailableArticles();
+      const articles = await this.articleRepo.findAvailableArticles(userId);
       return { success: true, articles };
     } catch (error) {
       this.handleError("Get Feed Error:", error);
@@ -119,6 +119,26 @@ export class ArticleService {
 
       if (article.author.toString() !== userId) {
         throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
+      }
+
+      // If a new image is being uploaded and there's an old image, delete the old one from Cloudinary
+      if (data.featuredImageId && article.featuredImageId && article.featuredImageId !== data.featuredImageId) {
+        try {
+          await cloudinary.uploader.destroy(article.featuredImageId);
+        } catch (error) {
+          console.error("Error deleting old image from Cloudinary:", error);
+          // Continue with update even if deletion fails
+        }
+      }
+
+      // If image is being removed (set to null) and there was an old image, delete it
+      if (data.featuredImage === null && article.featuredImageId) {
+        try {
+          await cloudinary.uploader.destroy(article.featuredImageId);
+        } catch (error) {
+          console.error("Error deleting image from Cloudinary:", error);
+          // Continue with update even if deletion fails
+        }
       }
 
       const updated = await this.articleRepo.update(articleId, data);
@@ -190,21 +210,22 @@ export class ArticleService {
     }
   }
 
-  async toggleBlock(articleId: string, userId: string, value: boolean) {
+  async toggleBlock(articleId: string, userId: string) {
     try {
       const article = await this.articleRepo.findById(articleId);
 
       if (!article)
         throw new AppError("Article not found", HttpStatus.NOT_FOUND);
 
-      if (article.author.toString() !== userId)
-        throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
-
-      const updated = await this.articleRepo.toggleBlock(articleId, value);
+      const updated = await this.articleRepo.toggleBlock(articleId, userId);
+      
+      const isBlocked = updated?.blockedBy.some(
+        (id) => id.toString() === userId
+      );
 
       return {
         success: true,
-        message: value ? "Article blocked" : "Article unblocked",
+        message: isBlocked ? "Article blocked" : "Article unblocked",
         article: updated,
       };
     } catch (error) {

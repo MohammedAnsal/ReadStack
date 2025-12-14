@@ -10,5 +10,6 @@ authRouter.patch(
 );
 
 authRouter.post("/signIn", authController.signIn.bind(authController));
+authRouter.post("/logout", authController.logout.bind(authController));
 
 export default authRouter;

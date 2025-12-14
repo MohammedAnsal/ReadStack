@@ -62,4 +62,40 @@ export const articleService = {
       throw new Error(extractErrorMessage(error));
     }
   },
+
+  likeArticle: async (id: string): Promise<ArticleResponse> => {
+    try {
+      const res = await userAxiosInstance.post(`/articles/${id}/like`);
+      return res.data;
+    } catch (error) {
+      throw new Error(extractErrorMessage(error));
+    }
+  },
+
+  dislikeArticle: async (id: string): Promise<ArticleResponse> => {
+    try {
+      const res = await userAxiosInstance.post(`/articles/${id}/dislike`);
+      return res.data;
+    } catch (error) {
+      throw new Error(extractErrorMessage(error));
+    }
+  },
+
+  toggleBlock: async (id: string): Promise<ArticleResponse> => {
+    try {
+      const res = await userAxiosInstance.patch(`/articles/${id}/block`, {});
+      return res.data;
+    } catch (error) {
+      throw new Error(extractErrorMessage(error));
+    }
+  },
+
+  updateArticle: async (id: string, data: CreateArticlePayload) => {
+    try {
+      const res = await userAxiosInstance.patch(`/articles/${id}`, data);
+      return res.data;
+    } catch (error) {
+      throw new Error(extractErrorMessage(error));
+    }
+  },
 };

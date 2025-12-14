@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import authRouter from "./routers/auth.routers";
 import { dbConnection } from "./config/db.connetion";
 import articleRouter from "./routers/article.routers";
+import userRouter from "./routers/user.routers";
 
 dotenv.config({ debug: true });
 dbConnection();
@@ -27,6 +28,7 @@ app.use(
 
 app.use("/auth", authRouter);
 app.use("/articles", articleRouter);
+app.use("/users", userRouter);
 
 const PORT = process.env.PORT || 6002;
 

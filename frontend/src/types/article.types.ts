@@ -23,13 +23,14 @@ export interface Article {
   author:
     | {
         _id: string;
-        userName: string;
+        firstName: string | null;
+        lastName: string | null;
         email: string;
       }
     | string;
   likes: string[];
   dislikes: string[];
-  isBlocked: boolean;
+  blockedBy: string[];
   createdAt: string;
   updatedAt: string;
 }

@@ -124,6 +124,28 @@ export class AuthController implements IAuthController {
       });
     }
   }
+
+  async logout(req: Request, res: Response): Promise<any> {
+    try {
+      const refreshToken = req.cookies.refresh_token;
+
+      if (!refreshToken) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: "No token provided" });
+      }
+
+      res.clearCookie("refresh_token");
+
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: "Logged out successfully" });
+    } catch (error) {
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: "Server error" });
+    }
+  }
 }
 
 export const authController = Container.get(AuthController);

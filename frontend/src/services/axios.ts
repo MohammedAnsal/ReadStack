@@ -1,7 +1,7 @@
-// import { logout } from "../../redux/slice/userSlice";
-// import store from "../../redux/store/store";
+
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { useAuthStore } from "../store/auth.store";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -16,6 +16,17 @@ export const publicAxiosInstance = axios.create({
 }); //  Public Axios Instance
 
 const controllerMap = new Map();
+
+// **Logout Function**
+const handleLogout = () => {
+  const logout = useAuthStore.getState().logout;
+  localStorage.removeItem("access-token");
+  logout();
+  // Redirect to signin page
+  if (window.location.pathname !== "/signin") {
+    window.location.href = "/signin";
+  }
+};
 
 //  **Request Interceptor**
 userAxiosInstance.interceptors.request.use(async (config) => {
@@ -62,8 +73,7 @@ userAxiosInstance.interceptors.response.use(
           }
         } catch (err) {
           toast.error("Session expired, please log in again.");
-          //   store.dispatch(logout());
-          localStorage.removeItem("access-token");
+          handleLogout();
           return Promise.reject(err);
         }
       }
@@ -71,8 +81,7 @@ userAxiosInstance.interceptors.response.use(
       // **Handle Forbidden (403) - Blocked User**
       if (status === 403) {
         toast.error("Your account has been blocked. Logging out...");
-        // store.dispatch(logout());
-        localStorage.removeItem("access-token");
+        handleLogout();
         return Promise.reject(new Error("User blocked by admin"));
       }
 

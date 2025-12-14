@@ -16,7 +16,7 @@ export interface IArticleService {
     folder?: string
   ): Promise<{ url: string; publicId: string }>;
 
-  getFeed(): Promise<{
+  getFeed(userId?: string): Promise<{
     success: boolean;
     articles: IArticle[];
   }>;
@@ -69,8 +69,7 @@ export interface IArticleService {
 
   toggleBlock(
     articleId: string,
-    userId: string,
-    value: boolean
+    userId: string
   ): Promise<{
     success: boolean;
     message: string;

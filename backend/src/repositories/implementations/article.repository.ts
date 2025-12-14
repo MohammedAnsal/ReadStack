@@ -5,6 +5,7 @@ import {
   CreateArticleInput,
   IArticleRepository,
 } from "../interfaces/article.Irepository";
+import { Types } from "mongoose";
 
 @Service()
 export class ArticleRepository
@@ -15,8 +16,12 @@ export class ArticleRepository
     super(Article);
   }
 
-  async findAvailableArticles(): Promise<IArticle[]> {
-    return this.model.find({ isBlocked: false }).populate("author").exec();
+  async findAvailableArticles(userId?: string): Promise<IArticle[]> {
+    const query: any = {};
+    if (userId) {
+      query.blockedBy = { $nin: [new Types.ObjectId(userId)] };
+    }
+    return this.model.find(query).populate("author").exec();
   }
 
   async findByIdWithAuthor(id: string): Promise<IArticle | null> {
@@ -57,13 +62,28 @@ export class ArticleRepository
 
   async toggleBlock(
     articleId: string,
-    value: boolean
+    userId: string
   ): Promise<IArticle | null> {
-    return this.model.findByIdAndUpdate(
-      articleId,
-      { isBlocked: value },
-      { new: true }
+    const article = await this.model.findById(articleId);
+    if (!article) return null;
+
+    const isBlocked = article.blockedBy.some(
+      (id) => id.toString() === userId
     );
+
+    if (isBlocked) {
+      return this.model.findByIdAndUpdate(
+        articleId,
+        { $pull: { blockedBy: userId } },
+        { new: true }
+      );
+    } else {
+      return this.model.findByIdAndUpdate(
+        articleId,
+        { $addToSet: { blockedBy: userId } },
+        { new: true }
+      );
+    }
   }
 }
 

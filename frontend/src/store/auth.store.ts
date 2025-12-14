@@ -14,6 +14,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
+      user: null,
       userName: null,
       email: null,
       accessToken: null,
@@ -29,6 +30,7 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () =>
         set({
+          user: null,
           userName: null,
           email: null,
           accessToken: null,

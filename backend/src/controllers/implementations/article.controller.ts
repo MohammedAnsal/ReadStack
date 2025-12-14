@@ -78,9 +78,10 @@ export class ArticleController implements IArticleController {
     }
   }
 
-  async getFeed(req: Request, res: Response) {
+  async getFeed(req: AuthRequest, res: Response) {
     try {
-      const response = await this.articleService.getFeed();
+      const userId = req.user?.id;
+      const response = await this.articleService.getFeed(userId);
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {
       if (error instanceof AppError) {
@@ -255,8 +256,7 @@ export class ArticleController implements IArticleController {
 
       const response = await this.articleService.toggleBlock(
         req.params.id,
-        userId,
-        req.body.status
+        userId
       );
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {

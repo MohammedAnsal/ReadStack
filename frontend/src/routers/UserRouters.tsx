@@ -8,6 +8,8 @@ import { PublicRoute } from "./authRoutes/PublicRoute";
 import VerifyEmailPage from "../pages/user/auth/VerifyEmail";
 import SingleArticle from "../pages/article/SingleArticle";
 import CreateArticle from "../pages/article/CreateArticle";
+import EditArticle from "../pages/article/EditArticle";
+import { Profile } from "../pages/user/profile/Profile";
 
 export const UserRoutes: RouteObject[] = [
   { path: "/", element: <HomePage /> },
@@ -24,9 +26,11 @@ export const UserRoutes: RouteObject[] = [
   {
     element: <ProtectedRoute />,
     children: [
+      { path: "/profile", element: <Profile /> },
       { path: "/articles/feed", element: <FeedPage /> },
-      { path: "/articles/:id  ", element: <SingleArticle /> },
-      { path: "/articles/create" , element : <CreateArticle/> },
+      { path: "/articles/create", element: <CreateArticle /> },
+      { path: "/articles/:id/edit", element: <EditArticle /> },
+      { path: "/articles/:id", element: <SingleArticle /> },
     ],
   },
 

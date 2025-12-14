@@ -9,7 +9,7 @@ export interface IArticle extends Document {
   author: mongoose.Types.ObjectId;
   likes: mongoose.Types.ObjectId[];
   dislikes: mongoose.Types.ObjectId[];
-  isBlocked: boolean;
+  blockedBy: mongoose.Types.ObjectId[];
 }
 
 const articleSchema = new Schema<IArticle>(
@@ -29,8 +29,7 @@ const articleSchema = new Schema<IArticle>(
 
     likes: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
     dislikes: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
-
-    isBlocked: { type: Boolean, default: false },
+    blockedBy: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
   },
   { timestamps: true }
 );

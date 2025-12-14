@@ -38,7 +38,9 @@ const CreateArticle = () => {
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
   const [featuredImageFile, setFeaturedImageFile] = useState<File | null>(null);
-  const [featuredImagePreview, setFeaturedImagePreview] = useState<string | null>(null);
+  const [featuredImagePreview, setFeaturedImagePreview] = useState<
+    string | null
+  >(null);
   const [isPublishing, setIsPublishing] = useState(false);
   const [, setEditorState] = useState(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -139,7 +141,9 @@ const CreateArticle = () => {
       // Upload image first if one is selected
       if (featuredImageFile) {
         try {
-          const uploadResponse = await articleService.uploadImage(featuredImageFile);
+          const uploadResponse = await articleService.uploadImage(
+            featuredImageFile
+          );
           if (uploadResponse.success) {
             featuredImageUrl = uploadResponse.url;
             featuredImageId = uploadResponse.publicId;
@@ -155,15 +159,14 @@ const CreateArticle = () => {
       }
 
       // Create article with uploaded image data
-      const res = await articleService.createArticle({
+      await articleService.createArticle({
         title: title.trim(),
         category: tag || "General",
         content,
         featuredImage: featuredImageUrl,
         featuredImageId: featuredImageId,
       });
-      
-      console.log(res);
+
       toast.success("Article published successfully");
       navigate("/articles/feed");
     } catch (error) {
@@ -278,6 +281,17 @@ const CreateArticle = () => {
             <option value="AI">AI</option>
             <option value="Writing">Writing</option>
             <option value="Product">Product</option>
+            <option value="Technology">Technology</option>
+            <option value="Business">Business</option>
+            <option value="Science">Science</option>
+            <option value="Health">Health</option>
+            <option value="Education">Education</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Finance">Finance</option>
+            <option value="Travel">Travel</option>
+            <option value="Food">Food</option>
+            <option value="Sports">Sports</option>
+            <option value="Entertainment">Entertainment</option>
           </select>
         </div>
 

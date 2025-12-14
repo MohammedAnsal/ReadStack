@@ -19,5 +19,6 @@ export interface IArticleRepository
   findByAuthor(authorId: string): Promise<IArticle[]>;
   toggleLike(articleId: string, userId: string): Promise<IArticle | null>;
   toggleDislike(articleId: string, userId: string): Promise<IArticle | null>;
-  toggleBlock(articleId: string, value: boolean): Promise<IArticle | null>;
+  toggleBlock(articleId: string, userId: string): Promise<IArticle | null>;
+  findAvailableArticles(userId?: string): Promise<IArticle[]>;
 }
