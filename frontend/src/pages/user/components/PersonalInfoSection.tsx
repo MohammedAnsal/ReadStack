@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { UserProfile } from "../../../services/api/user.api";
 
 interface PersonalInfoSectionProps {
@@ -47,7 +46,9 @@ export const PersonalInfoSection = ({
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8 animate-fade-in-up">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Personal Information</h2>
+        <h2 className="text-2xl font-bold text-gray-900">
+          Personal Information
+        </h2>
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
