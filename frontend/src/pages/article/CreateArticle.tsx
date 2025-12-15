@@ -45,6 +45,12 @@ const CreateArticle = () => {
   const [, setEditorState] = useState(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const getSentenceCount = (text: string) =>
+    text
+      .split(/[.!?]+/g)
+      .map((sentence) => sentence.trim())
+      .filter(Boolean).length;
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -93,14 +99,12 @@ const CreateArticle = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
       e.target.value = "";
       return;
     }
 
-    // Validate file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
       toast.error("Image size must be less than 10MB");
       e.target.value = "";
@@ -124,12 +128,31 @@ const CreateArticle = () => {
 
   const onPublish = async () => {
     const content = editor?.getJSON();
+    const plainText = editor?.getText().trim() || "";
+
     if (!title.trim()) {
       toast.error("Title is required");
       return;
     }
-    if (!content) {
+
+    if (!tag) {
+      toast.error("Please select a category");
+      return;
+    }
+
+    if (!featuredImageFile) {
+      toast.error("Featured image is required");
+      return;
+    }
+
+    if (!content || !plainText) {
       toast.error("Write something before publishing");
+      return;
+    }
+
+    const sentenceCount = getSentenceCount(plainText);
+    if (sentenceCount < 50) {
+      toast.error("Content must be at least 50 sentences");
       return;
     }
 
@@ -138,7 +161,6 @@ const CreateArticle = () => {
       let featuredImageUrl: string | null = null;
       let featuredImageId: string | null = null;
 
-      // Upload image first if one is selected
       if (featuredImageFile) {
         try {
           const uploadResponse = await articleService.uploadImage(
@@ -158,7 +180,6 @@ const CreateArticle = () => {
         }
       }
 
-      // Create article with uploaded image data
       await articleService.createArticle({
         title: title.trim(),
         category: tag || "General",
