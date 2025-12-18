@@ -116,7 +116,7 @@ export default function LoginPage() {
           </motion.div>
 
           {/* Forgot Password Link */}
-          <motion.div
+          {/* <motion.div
             variants={itemVariants as any}
             className="flex justify-end"
           >
@@ -126,7 +126,7 @@ export default function LoginPage() {
             >
               Forgot password?
             </Link>
-          </motion.div>
+          </motion.div> */}
 
           {/* Submit Button */}
           <motion.div variants={itemVariants as any} className="pt-2">
