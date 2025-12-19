@@ -12,13 +12,16 @@ export type CreateArticleInput = {
 };
 
 export interface IArticleRepository
-  extends IBaseRepository<IArticle, CreateArticleInput>
-{
-  findAvailableArticles(): Promise<IArticle[]>;
+  extends IBaseRepository<IArticle, CreateArticleInput> {
+  // findAvailableArticles(): Promise<IArticle[]>;
   findByIdWithAuthor(id: string): Promise<IArticle | null>;
   findByAuthor(authorId: string): Promise<IArticle[]>;
   toggleLike(articleId: string, userId: string): Promise<IArticle | null>;
   toggleDislike(articleId: string, userId: string): Promise<IArticle | null>;
   toggleBlock(articleId: string, userId: string): Promise<IArticle | null>;
-  findAvailableArticles(userId?: string): Promise<IArticle[]>;
+  findAvailableArticles(
+    userId?: string,
+    page?: number,
+    limit?: number
+  ): Promise<{ articles: IArticle[]; total: number }>;
 }

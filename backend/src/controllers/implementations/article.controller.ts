@@ -81,21 +81,24 @@ export class ArticleController implements IArticleController {
   async getFeed(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.id;
-      const response = await this.articleService.getFeed(userId);
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 10;
+
+      const response = await this.articleService.getFeed(userId, page, limit);
+
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {
       if (error instanceof AppError) {
-        console.log(error.message);
         return res.status(error.statusCode).json({
-          status: false,
+          success: false,
           message: error.message,
         });
       }
 
-      console.error("Unexpected Error (signUp):", error);
-      return res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ status: false, message: responseMessage.ERROR_MESSAGE });
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: responseMessage.ERROR_MESSAGE,
+      });
     }
   }
 

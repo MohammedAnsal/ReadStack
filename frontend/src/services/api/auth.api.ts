@@ -40,6 +40,36 @@ export const authService = {
     }
   },
 
+  forgotPassword: async (email: string) => {
+    try {
+      const res = await publicAxiosInstance.post("/auth/forgot-password", {
+        email,
+      });
+      return res.data;
+    } catch (error) {
+      throw new Error(extractErrorMessage(error));
+    }
+  },
+
+  resetPassword: async (
+    email: string,
+    token: string,
+    newPassword: string,
+    confirmPassword: string
+  ) => {
+    try {
+      const res = await publicAxiosInstance.post("/auth/reset-password", {
+        email,
+        token,
+        newPassword,
+        confirmPassword,
+      });
+      return res.data;
+    } catch (error) {
+      throw new Error(extractErrorMessage(error));
+    }
+  },
+
   logout: async () => {
     try {
       const res = await publicAxiosInstance.post("/auth/logout");

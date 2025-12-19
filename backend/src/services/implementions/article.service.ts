@@ -73,10 +73,21 @@ export class ArticleService {
     });
   }
 
-  async getFeed(userId?: string) {
+  async getFeed(userId?: string, page = 1, limit = 10) {
     try {
-      const articles = await this.articleRepo.findAvailableArticles(userId);
-      return { success: true, articles };
+      const { articles, total } = await this.articleRepo.findAvailableArticles(
+        userId,
+        page,
+        limit
+      );
+
+      const hasMore = page * limit < total;
+
+      return {
+        success: true,
+        articles,
+        hasMore,
+      };
     } catch (error) {
       this.handleError("Get Feed Error:", error);
     }
@@ -122,7 +133,11 @@ export class ArticleService {
       }
 
       // If a new image is being uploaded and there's an old image, delete the old one from Cloudinary
-      if (data.featuredImageId && article.featuredImageId && article.featuredImageId !== data.featuredImageId) {
+      if (
+        data.featuredImageId &&
+        article.featuredImageId &&
+        article.featuredImageId !== data.featuredImageId
+      ) {
         try {
           await cloudinary.uploader.destroy(article.featuredImageId);
         } catch (error) {
@@ -218,7 +233,7 @@ export class ArticleService {
         throw new AppError("Article not found", HttpStatus.NOT_FOUND);
 
       const updated = await this.articleRepo.toggleBlock(articleId, userId);
-      
+
       const isBlocked = updated?.blockedBy.some(
         (id) => id.toString() === userId
       );

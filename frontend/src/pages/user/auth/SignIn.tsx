@@ -26,16 +26,17 @@ export default function LoginPage() {
       const res = await authService.signin(data.email, data.password);
       localStorage.setItem("access-token", res.accessToken);
 
+      
       useAuthStore.getState().login({
         userName: res.userName,
         email: res.email,
         token: res.accessToken,
       });
       toast.success(res.message || "Login successful!");
-
+      
       navigate("/articles/feed", { replace: true });
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Login failed");
+      toast.error(err.message || "Login failed");
     }
   };
 
@@ -116,7 +117,7 @@ export default function LoginPage() {
           </motion.div>
 
           {/* Forgot Password Link */}
-          {/* <motion.div
+          <motion.div
             variants={itemVariants as any}
             className="flex justify-end"
           >
@@ -126,7 +127,7 @@ export default function LoginPage() {
             >
               Forgot password?
             </Link>
-          </motion.div> */}
+          </motion.div>
 
           {/* Submit Button */}
           <motion.div variants={itemVariants as any} className="pt-2">

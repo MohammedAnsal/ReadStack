@@ -10,6 +10,8 @@ import SingleArticle from "../pages/article/SingleArticle";
 import CreateArticle from "../pages/article/CreateArticle";
 import EditArticle from "../pages/article/EditArticle";
 import { Profile } from "../pages/user/profile/Profile";
+import ForgotPasswordPage from "../pages/user/auth/ForgotPassword";
+import ResetPasswordPage from "../pages/user/auth/ResetPassword";
 
 export const UserRoutes: RouteObject[] = [
   { path: "/", element: <HomePage /> },
@@ -20,6 +22,8 @@ export const UserRoutes: RouteObject[] = [
       { path: "/auth/login", element: <LoginPage /> },
       { path: "/auth/signup", element: <SignupPage /> },
       { path: "/auth/verify-email", element: <VerifyEmailPage /> },
+      { path: "/auth/forgot-password", element: <ForgotPasswordPage /> },
+      { path: "/auth/reset-password", element: <ResetPasswordPage /> },
     ],
   },
 

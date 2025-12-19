@@ -11,9 +11,17 @@ import { IUserRepository } from "../../repositories/interfaces/user.Irepositroy"
 import { AppError } from "../../utils/customError.utils";
 import { IAuthService } from "../interfaces/auth.Iservice";
 import { hashPassword } from "../../utils/password.utils";
-import { SignInDTO, SignUpDTO } from "../../dtos/auth.dto";
+import {
+  ForgotPasswordDTO,
+  ResetPasswordDTO,
+  SignInDTO,
+  SignUpDTO,
+} from "../../dtos/auth.dto";
 import { IUser } from "../../models/user.model";
-import { sendVerificationEmail } from "../../utils/email.utils";
+import {
+  sendPasswordResetEmail,
+  sendVerificationEmail,
+} from "../../utils/email.utils";
 import {
   generateAccessToken,
   generateEmailVerificationToken,
@@ -194,6 +202,90 @@ export class AuthService implements IAuthService {
 
       console.error("SignIn Error:", error);
 
+      throw new AppError(
+        responseMessage.ERROR_MESSAGE,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  async requestPasswordReset(
+    data: ForgotPasswordDTO
+  ): Promise<{ status: boolean; message: string }> {
+    try {
+      const { email } = data;
+      const existingUser = await this.userRepo.findByEmail(email);
+
+      if (!existingUser) {
+        throw new AppError("User not found", HttpStatus.NOT_FOUND);
+      }
+
+      const resetToken = generateEmailVerificationToken(email);
+
+      await sendPasswordResetEmail({
+        email,
+        name: existingUser.firstName + existingUser.lastName,
+        token: resetToken,
+      });
+
+      return {
+        status: true,
+        message: "Password reset link sent to your email.",
+      };
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+
+      console.error("Request Password Reset Error:", error);
+      throw new AppError(
+        responseMessage.ERROR_MESSAGE,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  async resetPassword(
+    data: ResetPasswordDTO
+  ): Promise<{ status: boolean; message: string }> {
+    try {
+      const { email, token, newPassword, confirmPassword } = data;
+
+      if (newPassword !== confirmPassword) {
+        throw new AppError("Passwords do not match.", HttpStatus.BAD_REQUEST);
+      }
+
+      const existingUser = await this.userRepo.findByEmail(email);
+
+      if (!existingUser) {
+        throw new AppError(
+          "User not found. Please register again.",
+          HttpStatus.NOT_FOUND
+        );
+      }
+
+      const decodedEmail = verifyEmailToken(token);
+
+      if (decodedEmail !== email) {
+        throw new AppError(
+          "Reset link is invalid or expired. Please request a new one.",
+          HttpStatus.UNAUTHORIZED
+        );
+      }
+
+      const hashedPassword = await hashPassword(newPassword);
+      await this.userRepo.updatePassword(email, hashedPassword);
+
+      return {
+        status: true,
+        message: "Password reset successfully. You can now sign in.",
+      };
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+
+      console.error("Reset Password Error:", error);
       throw new AppError(
         responseMessage.ERROR_MESSAGE,
         HttpStatus.INTERNAL_SERVER_ERROR

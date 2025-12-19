@@ -36,9 +36,11 @@ export const articleService = {
     }
   },
 
-  getFeed: async (): Promise<ArticleResponse> => {
+  getFeed: async (page = 1, limit = 10): Promise<ArticleResponse> => {
     try {
-      const res = await userAxiosInstance.get("/articles/feed");
+      const res = await userAxiosInstance.get("/articles/feed", {
+        params: { page, limit },
+      });
       return res.data;
     } catch (error) {
       throw new Error(extractErrorMessage(error));

@@ -10,6 +10,14 @@ authRouter.patch(
 );
 
 authRouter.post("/signIn", authController.signIn.bind(authController));
+authRouter.post(
+  "/forgot-password",
+  authController.requestPasswordReset.bind(authController)
+);
+authRouter.post(
+  "/reset-password",
+  authController.resetPassword.bind(authController)
+);
 authRouter.post("/logout", authController.logout.bind(authController));
 
 export default authRouter;

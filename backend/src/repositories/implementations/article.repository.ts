@@ -16,12 +16,32 @@ export class ArticleRepository
     super(Article);
   }
 
-  async findAvailableArticles(userId?: string): Promise<IArticle[]> {
+  async findAvailableArticles(
+    userId?: string,
+    page = 1,
+    limit = 10
+  ): Promise<{ articles: IArticle[]; total: number }> {
     const query: any = {};
+
     if (userId) {
       query.blockedBy = { $nin: [new Types.ObjectId(userId)] };
     }
-    return this.model.find(query).populate("author").exec();
+
+    const skip = (page - 1) * limit;
+
+    const [articles, total] = await Promise.all([
+      this.model
+        .find(query)
+        .populate("author", "firstName lastName email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+
+      this.model.countDocuments(query),
+    ]);
+
+    return { articles, total };
   }
 
   async findByIdWithAuthor(id: string): Promise<IArticle | null> {
@@ -67,9 +87,7 @@ export class ArticleRepository
     const article = await this.model.findById(articleId);
     if (!article) return null;
 
-    const isBlocked = article.blockedBy.some(
-      (id) => id.toString() === userId
-    );
+    const isBlocked = article.blockedBy.some((id) => id.toString() === userId);
 
     if (isBlocked) {
       return this.model.findByIdAndUpdate(

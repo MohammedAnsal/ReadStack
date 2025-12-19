@@ -35,6 +35,23 @@ export class UserRepository
       );
     }
   }
+
+  async updatePassword(
+    email: string,
+    password: string
+  ): Promise<IUser | null | never> {
+    try {
+      return await User.findOneAndUpdate(
+        { email },
+        { $set: { password } },
+        { new: true }
+      );
+    } catch (error) {
+      return Promise.reject(
+        new Error(`Error while updating user password ${error}`)
+      );
+    }
+  }
 }
 
 export const userRepository = Container.get(UserRepository);

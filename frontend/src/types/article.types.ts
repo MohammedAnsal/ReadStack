@@ -39,4 +39,5 @@ export interface ArticleResponse {
   success: boolean;
   articles?: Article[];
   article?: Article;
+  hasMore?: boolean; // add this line
 }

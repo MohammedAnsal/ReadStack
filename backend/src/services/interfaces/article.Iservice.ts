@@ -16,7 +16,11 @@ export interface IArticleService {
     folder?: string
   ): Promise<{ url: string; publicId: string }>;
 
-  getFeed(userId?: string): Promise<{
+  getFeed(
+    userId?: string,
+    page?: number,
+    limit?: number
+  ): Promise<{
     success: boolean;
     articles: IArticle[];
   }>;

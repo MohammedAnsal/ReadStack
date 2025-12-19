@@ -11,6 +11,7 @@ import {
   signUpSchema,
 } from "../../utils/validations/auth.validation";
 import { setCookie } from "../../utils/coockie.utils";
+import { ForgotPasswordDTO, ResetPasswordDTO } from "../../dtos/auth.dto";
 
 @Service()
 export class AuthController implements IAuthController {
@@ -118,6 +119,71 @@ export class AuthController implements IAuthController {
       }
 
       console.error("Unexpected Error (signUp):", error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        status: false,
+        message: responseMessage.ERROR_MESSAGE,
+      });
+    }
+  }
+
+  async requestPasswordReset(req: Request, res: Response): Promise<any> {
+    try {
+      const data = req.body as ForgotPasswordDTO;
+
+      if (!data.email) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          status: false,
+          message: "Email is required",
+        });
+      }
+
+      const result = await this.authService.requestPasswordReset(data);
+
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      if (error instanceof AppError) {
+        return res.status(error.statusCode).json({
+          status: false,
+          message: error.message,
+        });
+      }
+
+      console.error("Unexpected Error (requestPasswordReset):", error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        status: false,
+        message: responseMessage.ERROR_MESSAGE,
+      });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response): Promise<any> {
+    try {
+      const data = req.body as ResetPasswordDTO;
+
+      if (
+        !data.email ||
+        !data.token ||
+        !data.newPassword ||
+        !data.confirmPassword
+      ) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          status: false,
+          message: "Email, token and password fields are required",
+        });
+      }
+
+      const result = await this.authService.resetPassword(data);
+
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      if (error instanceof AppError) {
+        return res.status(error.statusCode).json({
+          status: false,
+          message: error.message,
+        });
+      }
+
+      console.error("Unexpected Error (resetPassword):", error);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         status: false,
         message: responseMessage.ERROR_MESSAGE,
