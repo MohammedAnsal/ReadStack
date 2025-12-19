@@ -75,7 +75,6 @@ export const authService = {
       const res = await publicAxiosInstance.post("/auth/logout");
       return res.data;
     } catch (error) {
-      // Even if the API call fails, we still want to logout on the frontend
       throw new Error(extractErrorMessage(error));
     }
   },
